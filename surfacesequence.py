@@ -74,3 +74,38 @@ class surfacesequence(object):
     def __init__(self):
         self.surface_list = []
         self.surface_number = 1
+        self._current_surface = 1
+
+    def open_images(self, image_path, surface_scaling, 
+                    surface_flipping = (False, False)):
+        """Open images, convert them to surfaces, scale and flip them"""
+        print("Load image(s) from %s . . . " % image_path),
+        if os.path.isfile(image_path):
+            surface = create_surface(image_path, surface_scaling, 
+                                     surface_flipping)
+            self.surface_list.append(surface)
+        else:
+            for path in read_multiple_images(image_path):
+                surface = create_surface(path, surface_scaling, 
+                                         surface_flipping)  
+                self.surface_list.append(surface)
+            self.surface_number = len(self.surface_list)
+        
+
+
+        if not self.surface_list == []:
+            print("DONE") 
+        else:
+            print("Error, couldn't load %s" % image_path) 
+            sys.exit()              
+
+    def handle(self):
+        """returns the current surface from the sequence """
+        if not self._current_surface == self.surface_number:
+            self._current_surface += 1
+            return self.surface_list[self.current_surface - 2]
+        else:
+            self._current_surface = 1
+            return self.surface_list[self.surface_number - 1]  
+  
+
