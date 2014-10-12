@@ -45,7 +45,7 @@ def read_multiple_images(image_path):
 
        Returns a list with all the image_paths
     """
-    splitted_path = image_path.rpartition("/") 
+    splitted_path = image_path.rpartition("/")  
     splitted_file = splitted_path[2].partition(".") 
     path_list = []
     for counter in range(1000):        
@@ -78,7 +78,14 @@ class surfacesequence(object):
 
     def open_images(self, image_path, surface_scaling, 
                     surface_flipping = (False, False)):
-        """Open images, convert them to surfaces, scale and flip them"""
+        """Open images, convert them to surfaces, scale and flip them
+
+           Args: image_path       -> the path to the image 
+                                    (string, 'folder/file.png')
+                 surface_scaling  -> size of the new surface(s) (tuple)
+                 surface_flipping -> flip the new surface on the x- or y- axis
+                                     (tuple)
+        """
         print("Load image(s) from %s . . . " % image_path),
         if os.path.isfile(image_path):
             surface = create_surface(image_path, surface_scaling, 
@@ -92,18 +99,26 @@ class surfacesequence(object):
             self.surface_number = len(self.surface_list)
         
 
-
         if not self.surface_list == []:
             print("DONE") 
         else:
             print("Error, couldn't load %s" % image_path) 
             sys.exit()              
 
-    def handle(self):
-        """returns the current surface from the sequence """
-        if not self._current_surface == self.surface_number:
-            self._current_surface += 1
-            return self.surface_list[self.current_surface - 2]
+    def handle(self, number = None):
+        """returns the current surface from the sequence 
+
+           Args: number -> select manually which surface shoudl be returned
+        """
+        if number:
+            return self.surface_list[number]
         else:
-            self._current_surface = 1
-            return self.surface_list[self.surface_number - 1]  
+            if not self._current_surface == self.surface_number:
+                self._current_surface += 1
+                return self.surface_list[self._current_surface - 1]
+            else:
+                self._current_surface = 1
+                return self.surface_list[self.surface_number - 1]  
+  
+
+
