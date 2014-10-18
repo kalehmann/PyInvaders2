@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#PyInvaders2 (c) 2014 by Karsten Lehmann
 
 ###############################################################################
 #                                                                             #
@@ -18,16 +18,28 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.    #
 ###############################################################################
 
+"""
+A module to handle image- or surface-sequences in pygame
+"""
+
 import os
 import sys
 import pygame
+import Tkinter
+import tkMessageBox
+
+__author__ = "Karsten Lehmann"
+__copyright__ = "Copyright 2014, Karsten Lehmann"
+__license__ = "GPLv3"
+__version__ = "2.0"
+__maintainer__ = "Karsten Lehmann"
 
 def create_surface(image_path, surface_scaling,
-                   surface_flipping = (False, False)):
-    """creates a surface from a image, scale the surface and 
-    if necessary flip it 
-    
-    Args: image_path      -> the path to the image (str)    
+                   surface_flipping=(False, False)):
+    """creates a surface from a image, scale the surface and
+    if necessary flip it
+
+    Args: image_path      -> the path to the image (str)
           surface_scaling -> the new scaling of the surface (tuple/list)
     """
     surface = pygame.image.load(image_path)
@@ -45,10 +57,10 @@ def read_multiple_images(image_path):
 
        Returns a list with all the image_paths
     """
-    splitted_path = image_path.rpartition("/")  
-    splitted_file = splitted_path[2].partition(".") 
+    splitted_path = image_path.rpartition("/")
+    splitted_file = splitted_path[2].partition(".")
     path_list = []
-    for counter in range(1000):        
+    for counter in range(1000):
         path_to_test = splitted_path[0] + "/" + splitted_file[0] + "/" \
                        + splitted_file[0] + "%03d"%counter + "." \
                        + splitted_file[2]
@@ -56,31 +68,30 @@ def read_multiple_images(image_path):
             path_list.append(path_to_test)
         else:
             break
-    return path_list      
+    return path_list
 
 
-class surfacesequence(object):
+class SurfaceSequence(object):
     """Allows to handle multiple images as a sequence
 
     This class load images and checks automaticaly if it is a single image
     or multiple images. All images were converted to surfaces. This class
     also handle imagesequences automatically
- 
+
     Attributes: surface_list     -> a list of all surfaces in this sequence
                 surface_number   -> the number of all surfaces in this sequence
-                _current_surface -> the current surface in this sequence 
-
+                _current_surface -> the current surface in this sequence
     """
     def __init__(self):
         self.surface_list = []
         self.surface_number = 1
         self._current_surface = 1
 
-    def open_images(self, image_path, surface_scaling, 
-                    surface_flipping = (False, False)):
+    def open_images(self, image_path, surface_scaling,
+                    surface_flipping=(False, False)):
         """Open images, convert them to surfaces, scale and flip them
 
-           Args: image_path       -> the path to the image 
+           Args: image_path       -> the path to the image
                                     (string, 'folder/file.png')
                  surface_scaling  -> size of the new surface(s) (tuple)
                  surface_flipping -> flip the new surface on the x- or y- axis
@@ -88,25 +99,28 @@ class surfacesequence(object):
         """
         print("Load image(s) from %s . . . " % image_path),
         if os.path.isfile(image_path):
-            surface = create_surface(image_path, surface_scaling, 
+            surface = create_surface(image_path, surface_scaling,
                                      surface_flipping)
             self.surface_list.append(surface)
         else:
             for path in read_multiple_images(image_path):
-                surface = create_surface(path, surface_scaling, 
-                                         surface_flipping)  
+                surface = create_surface(path, surface_scaling,
+                                         surface_flipping)
                 self.surface_list.append(surface)
             self.surface_number = len(self.surface_list)
-        
 
         if not self.surface_list == []:
-            print("DONE") 
+            print "DONE"
         else:
-            print("Error, couldn't load %s" % image_path) 
-            sys.exit()              
+            window = Tkinter.Tk()
+            window.wm_withdraw()
+            tkMessageBox.showinfo("Info",
+                                  "Error, couldn't load %s" % image_path)
+            window.destroy()
+            sys.exit()
 
-    def handle(self, number = None):
-        """returns the current surface from the sequence 
+    def handle(self, number=None):
+        """returns the current surface from the sequence
 
            Args: number -> select manually which surface shoudl be returned
         """
@@ -115,10 +129,8 @@ class surfacesequence(object):
         else:
             if not self._current_surface == self.surface_number:
                 self._current_surface += 1
-                return self.surface_list[self._current_surface - 1]
             else:
                 self._current_surface = 1
-                return self.surface_list[self.surface_number - 1]  
-  
+            return self.surface_list[self._current_surface - 1]
 
 

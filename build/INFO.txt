@@ -1,0 +1,4 @@
+This build was created on Windows XP Professional Service Pack 3 with:
+- python 2.7.7
+- pygame 1.9.1
+- py2exe 0.6.9
