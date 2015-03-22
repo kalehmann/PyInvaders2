@@ -8,4 +8,5 @@ NOTE: for compile you need the following software:
 - python 2.7
 - pygame 
 - py2exe
+- numpy
 
