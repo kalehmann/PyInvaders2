@@ -48,7 +48,7 @@ class BuildExe:
         self.project_name = "PyInvader2"
  
         #Project url
-        self.project_url = "about:none"
+        self.project_url = "https://github.com/kalehmann/PyInvaders2/"
  
         #Version of program
         self.project_version = "2.0"
