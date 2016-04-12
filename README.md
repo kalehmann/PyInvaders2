@@ -1,7 +1,8 @@
 PyInvaders2
 ===========
 
-A python-based clone of the popular game SpaceInvaders
+A python-based clone of the popular game SpaceInvaders.
+Download and unzip [this file](build/PyInvaders2.zip), to play this game on windows (you may need to click on *View Raw*).
 
 ![Screenshot](https://raw.githubusercontent.com/kalehmann/PyInvaders2/master/screenshots/screenshot_001.png)
 
