@@ -25,8 +25,8 @@ time in loops, show messageboxes and load soundfiles
 
 import pygame
 import os
-import Tkinter
-import tkMessageBox
+import tkinter as tk
+from tkinter import messagebox as tkMessageBox
 import random
 import sys
 
@@ -298,7 +298,7 @@ def messagebox(message):
 
        Args: message -> string, displayed in the messagebox
     """
-    window = Tkinter.Tk()  #setup main_window
+    window = tk.Tk()  #setup main_window
     window.wm_withdraw()   #set main_window to invisible
     tkMessageBox.showinfo("Info", message)
     window.destroy()       #close main_window
@@ -384,7 +384,7 @@ class PrivateHandler(object):
         self._current_surface = 1
 
     def set_random(self):
-        """switches to random surface"""  
+        """switches to random surface"""
         self._current_surface = random.randint(0, self.surf_seq.surface_number)
 
     def handle(self):
@@ -393,7 +393,7 @@ class PrivateHandler(object):
             self._current_surface += 1
         else:
             self._current_surface = 1
-        return self.surf_seq.surface_list[self._current_surface - 1]     
+        return self.surf_seq.surface_list[self._current_surface - 1]
 
 
 class SurfaceSequence(object):
@@ -422,7 +422,7 @@ class SurfaceSequence(object):
                  surface_flipping -> flip the new surface on the x- or y- axis
                                      (tuple)
         """
-        print("Load image(s) from %s . . . " % image_path),
+        print("Load image(s) from {} . . . ".format(image_path), end="")
         #check if there is a single image
         if os.path.isfile(image_path):
             surface = create_surface(image_path, surface_scaling,
@@ -437,7 +437,7 @@ class SurfaceSequence(object):
             self.surface_number = len(self.surface_list)
 
         if not self.surface_list == []:
-            print "DONE"
+            print("DONE")
         else:
             messagebox("Error, couldn't load %s" % image_path)
             sys.exit()

@@ -47,7 +47,7 @@ def check_for_exit(events):
     """
     for event in events:
         if event.type == pygame.QUIT:
-            print 'EXIT'
+            print('EXIT')
             sys.exit()
 
 def scene_basics():
@@ -355,7 +355,7 @@ class ScreenScaling(object):
                 del self.frame_times[0]
                 fps = 30 / (self.frame_times[-1:][0] -
                             self.frame_times[-2:-1][0])
-                print "%f FPS" % fps
+                print("{} FPS".format(fps))
             self.fps_check = gt.Delay(30)
 
     def set_size(self, size):

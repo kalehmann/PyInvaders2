@@ -258,7 +258,7 @@ class LevelList(list):
         filelist.sort()
         for level_file in filelist:
             self.append(Level(path + level_file))
-            print "Found levelfie at %s"% path +level_file
+            print("Found levelfie at {}".format(path + level_file))
         if self == []:
             gt.messagebox("No level-file found!")
             sys.exit()
