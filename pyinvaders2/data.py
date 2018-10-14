@@ -29,11 +29,18 @@ import copy
 import sys
 import gametools as gt
 
+from os.path import dirname, abspath
+import inspect
+
 __author__ = "Karsten Lehmann"
 __copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
 __version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
+
+game_dir = dirname(
+    abspath(inspect.getfile(inspect.currentframe()))
+)
 
 class Spaceship(pygame.sprite.Sprite):
     """A spaceship in a game, which can move and fire missiles
@@ -53,7 +60,9 @@ class Spaceship(pygame.sprite.Sprite):
         if not Spaceship.surface:
             #create surface
             Spaceship.surface = gt.SurfaceSequence()
-            Spaceship.surface.open_images("textures/spaceship.png", (64, 64))
+            Spaceship.surface.open_images(
+                game_dir + "/textures/spaceship.png", (64, 64)
+            )
         self.rect = pygame.Rect(0, 0, *self.size)
         self.rect.center = position
         self.shoot_delay = gt.Delay(0)
@@ -98,7 +107,9 @@ class Invader(object):
         self.size = 32, 32
         if not Invader.surface:
             Invader.surface = gt.SurfaceSequence()
-            Invader.surface.open_images("textures/invader.png", self.size)
+            Invader.surface.open_images(
+                game_dir + "/textures/invader.png", self.size
+            )
         self.rect = pygame.Rect(0, 0, *self.size)
         self.rect.center = position
         self.surface = Invader.surface.private_handler()
@@ -157,10 +168,13 @@ class Missile(object):
         self.direction = direction
         if not Missile.surface_up:
             Missile.surface_up = gt.SurfaceSequence()
-            Missile.surface_up.open_images("textures/missile.png", self.size)
+            Missile.surface_up.open_images(
+                game_dir + "/textures/missile.png", self.size
+            )
             Missile.surface_down = gt.SurfaceSequence()
-            Missile.surface_down.open_images("textures/missile.png", self.size,
-                                             (False, True))
+            Missile.surface_down.open_images(
+                game_dir + "/textures/missile.png", self.size, (False, True)
+            )
         if direction == 'up':
             self.surface = Missile.surface_up.private_handler()
         elif direction == 'down':
@@ -187,7 +201,9 @@ class Explosion(object):
         self.current_surface = -1
         if not Explosion.surface:
             Explosion.surface = gt.SurfaceSequence()
-            Explosion.surface.open_images("textures/explosion.png", (64, 64))
+            Explosion.surface.open_images(
+                game_dir + "/textures/explosion.png", (64, 64)
+            )
 
     def finished(self):
         """check if the explosion is gone"""
@@ -279,7 +295,9 @@ class LiveBar(object):
         self.left_pos = self.position[0] + 192, self.position[1]
         if not LiveBar.surface:
             LiveBar.surface = gt.SurfaceSequence()
-            LiveBar.surface.open_images("textures/livebar.png", (32, 32))
+            LiveBar.surface.open_images(
+                game_dir + "/textures/livebar.png", (32, 32)
+            )
 
     def deduct(self):
         """delete one livepoint and check if the spaceship is still alive"""
@@ -339,6 +357,7 @@ class Highscore(object):
     """A list with the five highest scores, reached in this game"""
     def __init__(self):
         self.scores = []
+        self.score_file_path = game_dir + "/.score"
         self.read_highscores()
 
     def check_highscore(self, score):
@@ -355,7 +374,7 @@ class Highscore(object):
 
     def write_highscores(self):
         """write all highscores to the file .score """
-        score_file = open(".score", "w")
+        score_file = open(self.score_file_path, "w")
         for score in self.scores:
             score_file.write("%d " % score + "\n")
         score_file.close()
@@ -363,8 +382,8 @@ class Highscore(object):
     def read_highscores(self):
         """read all highscores from the file .score"""
         self.scores = []
-        if os.path.isfile(".score"):
-            score_file = open(".score", "r")
+        if os.path.isfile(self.score_file_path):
+            score_file = open(self.score_file_path, "r")
             for line in score_file:
                 if len(self.scores) == 5:
                     break

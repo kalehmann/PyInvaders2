@@ -33,12 +33,18 @@ import random
 import gametools as gt
 import data
 
+from os.path import dirname, abspath
+import inspect
+
 __author__ = "Karsten Lehmann"
 __copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
 __version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
 
+game_dir = dirname(
+    abspath(inspect.getfile(inspect.currentframe()))
+)
 
 def check_for_exit(events):
     """test if the window gets closed and exit the game
@@ -85,8 +91,10 @@ class Game(object):
     def __init__(self):
         self.player = data.Spaceship((320, 440))
         self.background = data.StaticObject((0, 0))
-        self.background.add_images("textures/background.png", (640, 480))
-        self.level_list = data.LevelList("levels/")
+        self.background.add_images(
+            game_dir + "/textures/background.png", (640, 480)
+        )
+        self.level_list = data.LevelList(game_dir + "/levels/")
         self.live_bar = data.LiveBar((370, 20))
         self.score = data.Score(Constants.game_font, (580, 20))
         self.invaders = []
@@ -231,7 +239,7 @@ class Game(object):
 def gameover():
     """Simple image, exit to the main menu after 5 seconds"""
     gameover_image = data.StaticObject((0, 0))
-    gameover_image.add_images('textures/gameover.png', (640, 480))
+    gameover_image.add_images(game_dir + '/textures/gameover.png', (640, 480))
     time_to_continue = 150
     while time_to_continue:
         event_list = pygame.event.get()
@@ -390,25 +398,25 @@ if __name__ == "__main__":
     Constants.screen = pygame.display.set_mode(Constants.screen_size)
     Constants.screen_scaling = True
     Constants.smooth_scaling = False
-    if not os.path.isfile("textures/Game_font.ttf"):
+    Constants.game_font = game_dir + "/textures/Game_font.ttf"
+    if not os.path.isfile(Constants.game_font):
         gt.messagebox("couldn't load textures/Game_font.ttf")
         sys.exit()
-    Constants.game_font = "textures/Game_font.ttf"
     Constants.game_sound = False
     Constants.fps = 30
 
-    if not os.path.isfile("icon.png"):
+    if not os.path.isfile(game_dir + "/icon.png"):
         gt.messagebox("couldn't load icon.png")
         sys.exit()
-    screen_icon = pygame.image.load("icon.png").convert_alpha()
+    screen_icon = pygame.image.load(game_dir + "/icon.png").convert_alpha()
     screen_icon = pygame.transform.scale(screen_icon, (32, 32))
     pygame.display.set_icon(screen_icon)
     pygame.display.set_caption("PyInvaders2")
     #Sounds
-    soundtrack = gt.load_sound("sound/soundtrack.ogg")
-    klick_sound = gt.load_sound("sound/klick.ogg")
-    explosion_sound = gt.load_sound("sound/explosion.ogg")
-    shot_sound = gt.load_sound("sound/shot.ogg")
+    soundtrack = gt.load_sound(game_dir + "/sound/soundtrack.ogg")
+    klick_sound = gt.load_sound(game_dir + "/sound/klick.ogg")
+    explosion_sound = gt.load_sound(game_dir + "/sound/explosion.ogg")
+    shot_sound = gt.load_sound(game_dir + "/sound/shot.ogg")
     #colours
     Constants.colour_headline = (55, 225, 0)
     Constants.colour_active = (255, 150, 0)
@@ -417,8 +425,9 @@ if __name__ == "__main__":
     Constants.menu_font = pygame.font.Font(Constants.game_font, 70)
     #background of the menus
     Constants.menu_background = gt.SurfaceSequence()
-    Constants.menu_background.open_images("textures/menu_background.png",
-                                          (640, 480))
+    Constants.menu_background.open_images(
+        game_dir + "/textures/menu_background.png", (640, 480)
+    )
     highscore = data.Highscore()
     game = Game()
     upscaler = ScreenScaling()
