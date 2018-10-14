@@ -30,9 +30,9 @@ import sys
 import gametools as gt
 
 __author__ = "Karsten Lehmann"
-__copyright__ = "Copyright 2014, Karsten Lehmann"
+__copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
-__version__ = "2.0"
+__version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
 
 class Spaceship(pygame.sprite.Sprite):

@@ -31,9 +31,9 @@ import random
 import sys
 
 __author__ = "Karsten Lehmann"
-__copyright__ = "Copyright 2014, Karsten Lehmann"
+__copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
-__version__ = "1.0"
+__version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
 
 class Button(object):

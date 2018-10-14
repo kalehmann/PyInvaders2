@@ -34,9 +34,9 @@ import gametools as gt
 import data
 
 __author__ = "Karsten Lehmann"
-__copyright__ = "Copyright 2014, Karsten Lehmann"
+__copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
-__version__ = "2.0"
+__version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
 
 
