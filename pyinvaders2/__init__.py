@@ -220,20 +220,35 @@ class Game(Scene):
                     break
             self.screen.blit(*missile.get_data())
 
+    def get_invader_direction(self):
+        stuck_left = False
+        stuck_right = False
+        for invader in self.invaders:
+            if invader.rect.center[0] < 40:
+                stuck_left = True
+            elif invader.rect.center[0] > 600:
+                stuck_right = True
+        if stuck_left and stuck_right:
+            return 'STUCK'
+        if stuck_left:
+            self.iv_direction = 'RIGHT'
+            return 'RIGHT'
+        if stuck_right:
+            self.iv_direction = 'LEFT'
+            return 'LEFT'
+        return self.iv_direction
+
     def handle_invaders(self):
         """move and render all invaders"""
-        direction = self.iv_direction
+        direction = self.get_invader_direction()
         if self.iv_down.handle():
             self.iv_down = gt.Delay(100)
             iv_ymove = 32
         else:
             iv_ymove = 0
+
         for invader in self.invaders:
             invader.move(iv_ymove, direction)
-            if invader.rect.center[0] < 40:
-                self.iv_direction = 'RIGHT'
-            elif invader.rect.center[0] > 600:
-                self.iv_direction = 'LEFT'
             if invader.shoot(self.invaders):
                 missile_position = list(invader.rect.center)
                 missile_position[1] += 16
