@@ -195,30 +195,39 @@ class Game(Scene):
            self.SHOT_SOUND.play()
         self.missiles.append(data.Missile(position[:2], direction))
 
+    def handle_missile(self, missile):
+        missile.move()
+        if (missile.rect.colliderect(self.player.rect) and
+            missile.direction == 'down'):
+            player_surface = self.player.surface.handle(copy=True)
+            player_surface = pygame.transform.scale(player_surface,
+                                                    (32, 32))
+            self.trackers.append(data.Tracker(player_surface,
+                                            self.player.rect,
+                                            self.live_bar.left_pos))
+            return False
+
+        for invader in self.invaders:
+            if (missile.rect.colliderect(invader.rect) and
+                missile.direction == 'up'):
+                self.invaders.remove(invader)
+                self.add_explosion(invader.rect.center)
+                self.trackers.append(data.Tracker(invader.surface.handle(),
+                                                invader.rect,
+                                                self.score.position))
+                return False
+
+        if missile.rect.y < 0 or missile.rect.y > 480:
+            return False
+
+        self.screen.blit(*missile.get_data())
+
+        return True
+
     def handle_missiles(self):
         """render all missiles and check for hits"""
-        for missile in self.missiles:
-            missile.move()
-            if (missile.rect.colliderect(self.player.rect) and
-                missile.direction == 'down'):
-                player_surface = self.player.surface.handle(copy=True)
-                player_surface = pygame.transform.scale(player_surface,
-                                                        (32, 32))
-                self.missiles.remove(missile)
-                self.trackers.append(data.Tracker(player_surface,
-                                                self.player.rect,
-                                                self.live_bar.left_pos))
-            for invader in self.invaders:
-                if (missile.rect.colliderect(invader.rect) and
-                    missile.direction == 'up'):
-                    self.missiles.remove(missile)
-                    self.invaders.remove(invader)
-                    self.add_explosion(invader.rect.center)
-                    self.trackers.append(data.Tracker(invader.surface.handle(),
-                                                    invader.rect,
-                                                    self.score.position))
-                    break
-            self.screen.blit(*missile.get_data())
+        self.missiles[:] = [missile for missile in self.missiles
+                if self.handle_missile(missile)]
 
     def get_invader_direction(self):
         stuck_left = False
