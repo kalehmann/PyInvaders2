@@ -1,4 +1,4 @@
-#PyInvaders2 (c) 2014 by Karsten Lehmann
+#PyInvaders2 (c) 2018 by Karsten Lehmann
 
 ###############################################################################
 #                                                                             #
@@ -27,7 +27,7 @@ import os
 import random
 import copy
 import sys
-import gametools as gt
+from . import gametools as gt
 
 from os.path import dirname, abspath
 import inspect
@@ -268,8 +268,11 @@ class Level(object):
 
 class LevelList(list):
     """A list with all levels"""
-    def __init__(self, path):
+    def __init__(self, path = None):
         list.__init__(self)
+        if path is None:
+            path = game_dir + "/levels/"
+
         filelist = os.listdir(path)
         filelist.sort()
         for level_file in filelist:
@@ -315,8 +318,10 @@ class LiveBar(object):
 
 class Score(object):
     """a simple font, in the top-left corner of the window """
-    def __init__(self, font, position):
-        self.font = pygame.font.Font(font, 36)
+    def __init__(self, position):
+        self.font = pygame.font.Font(
+            game_dir + "/textures/game_font.ttf", 36
+        )
         self.score = 0
         self.position = position
 
@@ -374,16 +379,19 @@ class Highscore(object):
 
     def write_highscores(self):
         """write all highscores to the file .score """
-        score_file = open(self.score_file_path, "w")
-        for score in self.scores:
-            score_file.write("%d " % score + "\n")
-        score_file.close()
+        with open(self.score_file_path, "w") as score_file:
+            for score in self.scores:
+                score_file.write("%d " % score + "\n")
 
     def read_highscores(self):
         """read all highscores from the file .score"""
         self.scores = []
-        if os.path.isfile(self.score_file_path):
-            score_file = open(self.score_file_path, "r")
+        if not os.path.isfile(self.score_file_path):
+            self.scores = [0, 0, 0, 0, 0]
+            self.write_highscores()
+            return
+
+        with open(self.score_file_path, "r") as score_file:
             for line in score_file:
                 if len(self.scores) == 5:
                     break
@@ -395,6 +403,3 @@ class Highscore(object):
                 self.scores = [0, 0, 0, 0, 0]
                 self.write_highscores()
                 gt.messagebox("Corrupted .score file!")
-        else:
-            self.scores = [0, 0, 0, 0, 0]
-            self.write_highscores()

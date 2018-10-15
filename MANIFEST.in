@@ -1,0 +1,1 @@
+recursive-include pyinvaders2 *.png *.ttf *.txt *.ogg

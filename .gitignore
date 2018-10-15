@@ -1,2 +1,7 @@
+*__pycache__*
 *.pyc
 .score
+dist/
+build/
+*.egg-info
+*~

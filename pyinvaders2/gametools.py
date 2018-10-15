@@ -1,4 +1,4 @@
-#PyInvaders2 (c) 2014 by Karsten Lehmann
+#PyInvaders2 (c) 2018 by Karsten Lehmann
 
 ###############################################################################
 #                                                                             #
@@ -30,11 +30,101 @@ from tkinter import messagebox as tkMessageBox
 import random
 import sys
 
+from os.path import dirname, abspath
+import inspect
+
 __author__ = "Karsten Lehmann"
 __copyright__ = "Copyright 2018, Karsten Lehmann"
 __license__ = "GPLv3"
 __version__ = "2.1"
 __maintainer__ = "Karsten Lehmann"
+
+game_dir = dirname(
+    abspath(inspect.getfile(inspect.currentframe()))
+)
+
+def messagebox(message):
+    """Opens a simple window with the message
+
+       Args: message -> string, displayed in the messagebox
+    """
+    window = tk.Tk()  #setup main_window
+    window.wm_withdraw()   #set main_window to invisible
+    tkMessageBox.showinfo("Info", message)
+    window.destroy()       #close main_window
+
+def load_sound(sound_file):
+    """checks whether the file exists and loads it
+
+       Args: sound_file -> string, path to the sound file
+    """
+    if os.path.isfile(sound_file):
+        return pygame.mixer.Sound(sound_file)
+    else:
+        messagebox("Error , couldn't load %s" % sound_file)
+        sys.exit()
+
+
+def check_for_keydown(key, event_list):
+    """Return True once, if the key was pressed down
+
+       Args: key        -> int, number of the key (pygame.K_KEY)
+             event_list -> pygame.event.get()
+    """
+    for event in event_list:
+        if event.type == pygame.KEYDOWN:
+            if event.key == key:
+                return True
+    return False
+
+def check_for_keyup(key, event_list):
+    """Return True once, if the key goes up
+
+       Args: key        -> int, number of the key (pygame.K_KEY)
+             event_list -> pygame.event.get()
+    """
+    for event in event_list:
+        if event.type == pygame.KEYUP:
+            if event.key == key:
+                return True
+    return False
+
+
+def create_surface(image_path, surface_scaling,
+                   surface_flipping=(False, False)):
+    """creates a surface from a image, scale the surface and
+       if necessary flip it
+
+       Args: image_path      -> the path to the image (str)
+             surface_scaling -> the new scaling of the surface (tuple/list)
+    """
+    surface = pygame.image.load(image_path)
+    surface.convert_alpha()
+    surface = pygame.transform.scale(surface, surface_scaling)
+    surface = pygame.transform.flip(surface, surface_flipping[0],
+                                    surface_flipping[1])
+    return surface
+
+def read_multiple_images(image_path):
+    """load multiple numerated images
+
+       This function loads images from a path, which are numerated like
+       image000.png
+
+       Returns a list with all the image_paths
+    """
+    splitted_path = image_path.rpartition("/")
+    splitted_file = splitted_path[2].partition(".")
+    path_list = []
+    for counter in range(1000):
+        path_to_test = splitted_path[0] + "/" + splitted_file[0] + "/" \
+                       + splitted_file[0] + "%03d"%counter + "." \
+                       + splitted_file[2]
+        if os.path.isfile(path_to_test):
+            path_list.append(path_to_test)
+        else:
+            break
+    return path_list
 
 class Button(object):
     """A simple button for menus, use it with ButtonGroup
@@ -100,10 +190,15 @@ class ButtonGroup(object):
        Args: sound -> pygame.mixer.Sound, played when button is pressed or
                       changed
     """
+    CLICK_SOUND = None
 
-    def __init__(self, sound):
+    def __init__(self, sound = None):
+        if ButtonGroup.CLICK_SOUND is None:
+            ButtonGroup.CLICK_SOUND = load_sound(game_dir + "/sound/click.ogg")
         self.current_button = 1
         self.button_list = []
+        if sound is None:
+            sound = self.CLICK_SOUND
         self.button_sound = sound
         self.down_key = KeyCheck(pygame.K_DOWN, 10)
         self.up_key = KeyCheck(pygame.K_UP, 10)
@@ -166,13 +261,13 @@ class Menu(object):
                                    pressed or changed
     """
     def __init__(self, font, background_surfseq, colour_active, colour_passive,
-                 klick_sound):
+                 click_sound = None):
         self.screen = pygame.display.get_surface()
         self.font = font
         self.colour_active = colour_active
         self.colour_passive = colour_passive
         self.background = background_surfseq
-        self.button_group = ButtonGroup(klick_sound)
+        self.button_group = ButtonGroup(click_sound)
         self.fonts = []
 
     def add_text(self, text, position, colour=None):
@@ -227,30 +322,6 @@ class Menu(object):
         pressed_button = self.button_group.handle(events, sound)
         return pressed_button
 
-def check_for_keydown(key, event_list):
-    """Return True once, if the key was pressed down
-
-       Args: key        -> int, number of the key (pygame.K_KEY)
-             event_list -> pygame.event.get()
-    """
-    for event in event_list:
-        if event.type == pygame.KEYDOWN:
-            if event.key == key:
-                return True
-    return False
-
-def check_for_keyup(key, event_list):
-    """Return True once, if the key goes up
-
-       Args: key        -> int, number of the key (pygame.K_KEY)
-             event_list -> pygame.event.get()
-    """
-    for event in event_list:
-        if event.type == pygame.KEYUP:
-            if event.key == key:
-                return True
-    return False
-
 class KeyCheck(object):
     """advanced handle of keyboard input
 
@@ -292,29 +363,6 @@ class KeyCheck(object):
                     self.current_value += 1
                 return False
 
-
-def messagebox(message):
-    """Opens a simple window with the message
-
-       Args: message -> string, displayed in the messagebox
-    """
-    window = tk.Tk()  #setup main_window
-    window.wm_withdraw()   #set main_window to invisible
-    tkMessageBox.showinfo("Info", message)
-    window.destroy()       #close main_window
-
-def load_sound(sound_file):
-    """checks whether the file exists and loads it
-
-       Args: sound_file -> string, path to the sound file
-    """
-    if os.path.isfile(sound_file):
-        return pygame.mixer.Sound(sound_file)
-    else:
-        messagebox("Error , couldn't load %s" % sound_file)
-        sys.exit()
-
-
 class Delay(object):
     """A simple object, that helps to manage time in loops
 
@@ -337,42 +385,6 @@ class Delay(object):
         else:
             self.ticks -= 1
             return False
-
-def create_surface(image_path, surface_scaling,
-                   surface_flipping=(False, False)):
-    """creates a surface from a image, scale the surface and
-       if necessary flip it
-
-       Args: image_path      -> the path to the image (str)
-             surface_scaling -> the new scaling of the surface (tuple/list)
-    """
-    surface = pygame.image.load(image_path)
-    surface.convert_alpha()
-    surface = pygame.transform.scale(surface, surface_scaling)
-    surface = pygame.transform.flip(surface, surface_flipping[0],
-                                    surface_flipping[1])
-    return surface
-
-def read_multiple_images(image_path):
-    """load multiple numerated images
-
-       This function loads images from a path, which are numerated like
-       image000.png
-
-       Returns a list with all the image_paths
-    """
-    splitted_path = image_path.rpartition("/")
-    splitted_file = splitted_path[2].partition(".")
-    path_list = []
-    for counter in range(1000):
-        path_to_test = splitted_path[0] + "/" + splitted_file[0] + "/" \
-                       + splitted_file[0] + "%03d"%counter + "." \
-                       + splitted_file[2]
-        if os.path.isfile(path_to_test):
-            path_list.append(path_to_test)
-        else:
-            break
-    return path_list
 
 class PrivateHandler(object):
     """Allows multiple objects to use the same surfacesequence
